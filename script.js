@@ -1,10 +1,12 @@
 const imageUpload = document.getElementById('imageUpload')
 
 Promise.all([
-  faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-  faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-  faceapi.nets.ssdMobilenetv1.loadFromUri('/models')
+  faceapi.nets.faceRecognitionNet.loadFromUri('./models'),
+  faceapi.nets.faceLandmark68Net.loadFromUri('./models'),
+  faceapi.nets.ssdMobilenetv1.loadFromUri('./models')
 ]).then(start)
+
+document.getElementById("imageUpload").style.display = 'none';
 
 async function start() {
   const container = document.createElement('div')
@@ -14,7 +16,8 @@ async function start() {
   const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
   let image
   let canvas
-  document.body.append('Loaded')
+  document.getElementById("imageUpload").style.display = 'block';
+  document.getElementById("loading").style.display = 'none';
   imageUpload.addEventListener('change', async () => {
     if (image) image.remove()
     if (canvas) canvas.remove()
