@@ -2,6 +2,9 @@ const imageUpload = document.getElementById("imageUpload");
 let labelPercent = 0;
 let labelCount = 0;
 const loadingDiv = document.getElementById("loading_state");
+
+loadingDiv.innerHTML = `Loading models`;
+
 Promise.all([
   faceapi.nets.faceRecognitionNet.loadFromUri("./models"),
   faceapi.nets.faceLandmark68Net.loadFromUri("./models"),
@@ -11,10 +14,13 @@ Promise.all([
 document.getElementById("imageUpload").style.display = "none";
 
 async function start() {
+  loadingDiv.innerHTML = "Done loading models";
   const container = document.createElement("div");
   container.style.position = "relative";
   document.body.append(container);
   const labeledFaceDescriptors = await loadLabeledImages();
+  loadingDiv.innerHTML = `Teaching model images`;
+
   const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5);
   let image;
   let canvas;
@@ -64,7 +70,7 @@ function loadLabeledImages() {
       labelCount++;
       labelPercent = labelCount / (labels.length) * 100;
       console.log(`${Math.round(labelPercent)}%`);
-      loadingDiv.innerHTML = `${Math.round(labelPercent)}%`;
+      loadingDiv.innerHTML = `Downloading model images: ${Math.round(labelPercent)}%`;
       if(labelPercent == 100) loadingDiv.style.display = "none";
       const descriptions = [];
       for (let i = 1; i <= 2; i++) {
@@ -80,5 +86,7 @@ function loadLabeledImages() {
 
       return new faceapi.LabeledFaceDescriptors(label, descriptions);
     })
+    
   );
+  
 }
