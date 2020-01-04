@@ -1,7 +1,7 @@
 const imageUpload = document.getElementById("imageUpload");
 let labelPercent = 0;
 let labelCount = 0;
-
+const loadingDiv = document.getElementById("loading_state");
 Promise.all([
   faceapi.nets.faceRecognitionNet.loadFromUri("./models"),
   faceapi.nets.faceLandmark68Net.loadFromUri("./models"),
@@ -15,7 +15,7 @@ async function start() {
   container.style.position = "relative";
   document.body.append(container);
   const labeledFaceDescriptors = await loadLabeledImages();
-  const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
+  const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5);
   let image;
   let canvas;
   document.getElementById("imageUpload").style.display = "block";
@@ -62,12 +62,14 @@ function loadLabeledImages() {
   return Promise.all(
     labels.map(async label => {
       labelCount++;
-      Math.floor(labelPercent = labelCount / (labels.length) * 100);
-      console.log(labelPercent);
+      labelPercent = labelCount / (labels.length) * 100;
+      console.log(`${Math.round(labelPercent)}%`);
+      loadingDiv.innerHTML = `${Math.round(labelPercent)}%`;
+      if(labelPercent == 100) loadingDiv.style.display = "none";
       const descriptions = [];
       for (let i = 1; i <= 2; i++) {
         const img = await faceapi.fetchImage(
-          `https://raw.githubusercontent.com/filiptronicek/JS-Face-Recog/master/labeled_images/${label}/${i}.jpg`
+          `./labeled_images/${label}/${i}.jpg`
         );
         const detections = await faceapi
           .detectSingleFace(img)
