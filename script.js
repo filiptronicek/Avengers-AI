@@ -4,6 +4,7 @@ let labelCount = 0;
 const loadingDiv = document.getElementById("loading_state");
 
 loadingDiv.innerHTML = `Loading models`;
+document.getElementById("loading").style.display = "block";
 
 Promise.all([
   faceapi.nets.faceRecognitionNet.loadFromUri("./models"),
